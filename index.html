@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تطبيق جدول المواعيد الذكي</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- الشاشة الرئيسية: اللمبة على الشمال وتسجيل الدخول على اليمين -->
+  <div class="split-screen">
+    
+    <!-- الجانب الأيمن: تسجيل الدخول -->
+    <div class="right-panel">
+      <div class="login-box">
+        <h2>تسجيل الدخول</h2>
+        <div class="input-group">
+          <label for="email">البريد الإلكتروني</label>
+          <input type="email" id="email" placeholder="example@domain.com">
+        </div>
+        <div class="input-group">
+          <label for="password">كلمة المرور</label>
+          <input type="password" id="password" placeholder="••••••••">
+        </div>
+        <p class="error-msg" id="loginError">يرجى إدخال البريد الإلكتروني وكلمة المرور</p>
+        <button type="button" class="btn-login" id="btnLogin">دخول لجدول المواعيد</button>
+      </div>
+    </div>
+
+    <!-- الجانب الأيسر: اللمبة والحبل -->
+    <div class="left-panel">
+      <div class="lamp-btn" id="lampBtn" role="button" tabindex="0">
+        <svg viewBox="0 0 160 250">
+          <!-- سلك السقف -->
+          <line x1="80" y1="0" x2="80" y2="75" stroke="#475569" stroke-width="4" />
+          
+          <!-- الحبل المتدلي -->
+          <g class="cord-group">
+            <path d="M 94 84 L 114 88" stroke="#64748b" stroke-width="3" fill="none" />
+            <line x1="114" y1="88" x2="114" y2="195" stroke="#94a3b8" stroke-width="3" stroke-dasharray="4 3" stroke-linecap="round" />
+            <rect x="107" y="195" width="14" height="24" rx="7" fill="#d97706" stroke="#fbbf24" stroke-width="1.5" />
+          </g>
+
+          <!-- قاعدة اللمبة -->
+          <rect x="66" y="72" width="28" height="22" rx="4" fill="#475569" />
+          <line x1="66" y1="78" x2="94" y2="78" stroke="#1e293b" stroke-width="2" />
+          <line x1="66" y1="84" x2="94" y2="84" stroke="#1e293b" stroke-width="2" />
+
+          <!-- زجاج اللمبة -->
+          <path class="bulb-glass" d="M 68 94 C 68 105, 48 115, 48 142 C 48 162, 62 176, 80 176 C 98 176, 112 162, 112 142 C 112 115, 92 105, 92 94 Z" />
+
+          <!-- فتيلة اللمبة -->
+          <path class="bulb-filament" d="M 74 94 L 74 132 L 77 127 L 80 132 L 83 127 L 86 132 L 86 94" />
+        </svg>
+        <span class="hint" id="lampHint">اضغط على اللمبة أو الحبل للإضاءة 💡</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- صفحة التطبيق: جدول المواعيد -->
+  <div class="app-container">
+    <nav class="navbar">
+      <h3>📅 جدول مواعيدي</h3>
+    </nav>
+
+    <div class="schedule-wrapper">
+      <div class="schedule-header">
+        <h1 id="userGreeting">أهلاً بك!</h1>
+        <p>اكتب مواعيدك ومهامك اليومية بالأسفل وسيتم ترتيبها وحفظها تلقائياً</p>
+      </div>
+
+      <div class="add-task-card">
+        <input type="text" id="taskTitle" placeholder="اكتب اللي عايز تعمله (مثال: مذاكرة برمجة)">
+        <input type="date" id="taskDate">
+        <input type="time" id="taskTime">
+        <button type="button" class="btn-add" id="btnAdd">+ إضافة</button>
+      </div>
+
+      <div class="task-list" id="taskList"></div>
+    </div>
+  </div>
+<!-- صندوق التنبيهات والمنبه -->
+  <div class="alarm-toast" id="alarmToast">
+    <div class="alarm-icon" id="alarmIcon">🔔</div>
+    <div class="alarm-details">
+      <strong id="alarmTitle">تنبيه بموعدك</strong>
+      <p id="alarmText">تفاصيل الموعد</p>
+    </div>
+    <button type="button" class="btn-close-alarm" id="closeAlarmBtn">حسناً</button>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
