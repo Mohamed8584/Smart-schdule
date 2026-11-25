@@ -8,10 +8,7 @@
 </head>
 <body>
 
-  <!-- الشاشة الرئيسية: اللمبة على الشمال وتسجيل الدخول على اليمين -->
   <div class="split-screen">
-    
-    <!-- الجانب الأيمن: تسجيل الدخول -->
     <div class="right-panel">
       <div class="login-box">
         <h2>تسجيل الدخول</h2>
@@ -25,44 +22,73 @@
         </div>
         <p class="error-msg" id="loginError">يرجى إدخال البريد الإلكتروني وكلمة المرور</p>
         <button type="button" class="btn-login" id="btnLogin">دخول لجدول المواعيد</button>
+        <div class="login-divider"><span>أو</span></div>
+        <button type="button" class="btn-guest" id="btnGuest">الدخول كزائر (Guest) 👤</button>
       </div>
     </div>
 
-    <!-- الجانب الأيسر: اللمبة والحبل -->
     <div class="left-panel">
       <div class="lamp-btn" id="lampBtn" role="button" tabindex="0">
-        <svg viewBox="0 0 160 250">
-          <!-- سلك السقف -->
-          <line x1="80" y1="0" x2="80" y2="75" stroke="#475569" stroke-width="4" />
-          
-          <!-- الحبل المتدلي -->
-          <g class="cord-group">
-            <path d="M 94 84 L 114 88" stroke="#64748b" stroke-width="3" fill="none" />
-            <line x1="114" y1="88" x2="114" y2="195" stroke="#94a3b8" stroke-width="3" stroke-dasharray="4 3" stroke-linecap="round" />
-            <rect x="107" y="195" width="14" height="24" rx="7" fill="#d97706" stroke="#fbbf24" stroke-width="1.5" />
+        <svg viewBox="0 0 180 280">
+          <defs>
+            <linearGradient id="metalBase" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#334155" />
+              <stop offset="30%" stop-color="#64748b" />
+              <stop offset="70%" stop-color="#475569" />
+              <stop offset="100%" stop-color="#1e293b" />
+            </linearGradient>
+            <radialGradient id="glassOff" cx="35%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="rgba(255, 255, 255, 0.25)" />
+              <stop offset="60%" stop-color="rgba(148, 163, 184, 0.08)" />
+              <stop offset="100%" stop-color="rgba(71, 85, 105, 0.25)" />
+            </radialGradient>
+            <radialGradient id="glassOn" cx="50%" cy="45%" r="55%">
+              <stop offset="0%" stop-color="#ffffff" />
+              <stop offset="35%" stop-color="#fef08a" />
+              <stop offset="75%" stop-color="#facc15" />
+              <stop offset="100%" stop-color="#eab308" />
+            </radialGradient>
+            <linearGradient id="pullHandle" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#b45309" />
+              <stop offset="40%" stop-color="#f59e0b" />
+              <stop offset="100%" stop-color="#78350f" />
+            </linearGradient>
+          </defs>
+
+          <g class="lamp-assembly" id="lampAssembly">
+            <line x1="90" y1="0" x2="90" y2="75" stroke="#334155" stroke-width="5" />
+            <line x1="90" y1="0" x2="90" y2="75" stroke="#64748b" stroke-width="2" stroke-dasharray="6 4" />
+
+            <g class="cord-group" id="cordGroup">
+              <rect x="105" y="85" width="35" height="170" fill="transparent" />
+              <path d="M 105 86 Q 122 86 122 100" stroke="#94a3b8" stroke-width="2.5" fill="none" />
+              <line x1="122" y1="100" x2="122" y2="215" stroke="#cbd5e1" stroke-width="3.5" stroke-dasharray="1 5" stroke-linecap="round" />
+              <rect x="115" y="215" width="14" height="28" rx="7" fill="url(#pullHandle)" stroke="#fde047" stroke-width="1" />
+              <circle cx="122" cy="246" r="3" fill="#f59e0b" />
+            </g>
+
+            <g class="bulb-body" id="bulbBody">
+              <rect x="74" y="70" width="32" height="26" rx="5" fill="url(#metalBase)" />
+              <rect x="72" y="76" width="36" height="3" rx="1.5" fill="#1e293b" opacity="0.6" />
+              <rect x="72" y="83" width="36" height="3" rx="1.5" fill="#1e293b" opacity="0.6" />
+              <rect x="75" y="90" width="30" height="4" rx="2" fill="#0f172a" />
+              <path class="bulb-glass" d="M 76 94 C 76 108, 52 120, 52 150 C 52 174, 68 190, 90 190 C 112 190, 128 174, 128 150 C 128 120, 104 108, 104 94 Z" />
+              <path d="M 85 94 L 87 125 L 93 125 L 95 94" fill="rgba(255,255,255,0.15)" />
+              <path class="bulb-filament" d="M 82 94 L 82 138 L 85 132 L 88 138 L 90 132 L 92 138 L 95 132 L 98 138 L 98 94" />
+              <path class="bulb-reflection" d="M 65 130 C 60 142, 60 158, 67 168" stroke="rgba(255,255,255,0.45)" stroke-width="3.5" stroke-linecap="round" fill="none" />
+              <circle cx="71" cy="174" r="2" fill="rgba(255,255,255,0.45)" />
+            </g>
           </g>
-
-          <!-- قاعدة اللمبة -->
-          <rect x="66" y="72" width="28" height="22" rx="4" fill="#475569" />
-          <line x1="66" y1="78" x2="94" y2="78" stroke="#1e293b" stroke-width="2" />
-          <line x1="66" y1="84" x2="94" y2="84" stroke="#1e293b" stroke-width="2" />
-
-          <!-- زجاج اللمبة -->
-          <path class="bulb-glass" d="M 68 94 C 68 105, 48 115, 48 142 C 48 162, 62 176, 80 176 C 98 176, 112 162, 112 142 C 112 115, 92 105, 92 94 Z" />
-
-          <!-- فتيلة اللمبة -->
-          <path class="bulb-filament" d="M 74 94 L 74 132 L 77 127 L 80 132 L 83 127 L 86 132 L 86 94" />
         </svg>
-        <span class="hint" id="lampHint">اضغط على اللمبة أو الحبل للإضاءة 💡</span>
+        <span class="hint" id="lampHint">اسحب الحبل للأسفل أو اضغط على اللمبة 💡</span>
       </div>
     </div>
-
   </div>
 
-  <!-- صفحة التطبيق: جدول المواعيد -->
   <div class="app-container">
     <nav class="navbar">
       <h3>📅 جدول مواعيدي</h3>
+      <button type="button" class="btn-turn-off" id="btnLogout">إطفاء اللمبة والخروج 💡</button>
     </nav>
 
     <div class="schedule-wrapper">
@@ -81,7 +107,7 @@
       <div class="task-list" id="taskList"></div>
     </div>
   </div>
-<!-- صندوق التنبيهات والمنبه -->
+
   <div class="alarm-toast" id="alarmToast">
     <div class="alarm-icon" id="alarmIcon">🔔</div>
     <div class="alarm-details">
@@ -90,6 +116,7 @@
     </div>
     <button type="button" class="btn-close-alarm" id="closeAlarmBtn">حسناً</button>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
