@@ -1,6 +1,10 @@
 const lampBtn = document.getElementById('lampBtn');
+const bulbBody = document.getElementById('bulbBody');
+const cordGroup = document.getElementById('cordGroup');
 const lampHint = document.getElementById('lampHint');
 const btnLogin = document.getElementById('btnLogin');
+const btnGuest = document.getElementById('btnGuest');
+const btnLogout = document.getElementById('btnLogout');
 const btnAdd = document.getElementById('btnAdd');
 const userGreeting = document.getElementById('userGreeting');
 const taskList = document.getElementById('taskList');
@@ -13,20 +17,66 @@ try {
   tasks = [];
 }
 
-// تشغيل وإطفاء اللمبة
-lampBtn.addEventListener('click', () => {
-  lampBtn.classList.add('pulled');
-  setTimeout(() => {
-    lampBtn.classList.remove('pulled');
-  }, 200);
+function toggleLamp(animateCord = true) {
+  if (animateCord) {
+    lampBtn.classList.add('pulled');
+    setTimeout(() => {
+      lampBtn.classList.remove('pulled');
+    }, 220);
+  }
+
+  lampBtn.classList.remove('swinging');
+  void lampBtn.offsetWidth;
+  lampBtn.classList.add('swinging');
 
   const isOn = document.body.classList.toggle('light-on');
-  lampHint.textContent = isOn ? 'اضغط لإطفاء الإضاءة 💡' : 'اضغط على اللمبة أو الحبل للإضاءة 💡';
+  lampHint.textContent = isOn
+    ? 'اسحب الحبل أو اضغط على اللمبة للإطفاء 💡'
+    : 'اسحب الحبل للأسفل أو اضغط على اللمبة 💡';
   playSwitchSound(isOn);
+}
+
+bulbBody.addEventListener('click', () => {
+  toggleLamp(true);
 });
 
+let isDraggingCord = false;
+let startY = 0;
+let cordTriggered = false;
 
-// تسجيل الدخول
+cordGroup.addEventListener('pointerdown', (e) => {
+  isDraggingCord = true;
+  startY = e.clientY;
+  cordTriggered = false;
+  cordGroup.classList.add('dragging');
+  cordGroup.setPointerCapture(e.pointerId);
+});
+
+cordGroup.addEventListener('pointermove', (e) => {
+  if (!isDraggingCord) return;
+  const deltaY = Math.max(0, Math.min(45, e.clientY - startY));
+  cordGroup.style.transform = `translateY(${deltaY}px)`;
+
+  if (deltaY >= 24 && !cordTriggered) {
+    cordTriggered = true;
+    toggleLamp(false);
+  }
+});
+
+function releaseCord(e) {
+  if (!isDraggingCord) return;
+  isDraggingCord = false;
+  cordGroup.classList.remove('dragging');
+  cordGroup.style.transform = '';
+
+  if (!cordTriggered && Math.abs(e.clientY - startY) < 8) {
+    toggleLamp(true);
+  }
+}
+
+cordGroup.addEventListener('pointerup', releaseCord);
+cordGroup.addEventListener('pointercancel', releaseCord);
+
 btnLogin.addEventListener('click', () => {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
@@ -41,9 +91,31 @@ btnLogin.addEventListener('click', () => {
   userGreeting.textContent = `أهلاً بك يا ${userName} 👋`;
   document.body.classList.add('logged-in');
   renderTasks();
+
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
 });
 
-// إضافة موعد جديد بالتاريخ والوقت
+btnGuest.addEventListener('click', () => {
+  loginError.style.display = 'none';
+  userGreeting.textContent = 'أهلاً بك كزائر (Guest) 👋';
+  document.body.classList.add('logged-in');
+  renderTasks();
+
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+});
+
+if (btnLogout) {
+  btnLogout.addEventListener('click', () => {
+    document.body.classList.remove('logged-in', 'light-on');
+    lampHint.textContent = 'اسحب الحبل للأسفل أو اضغط على اللمبة 💡';
+    playSwitchSound(false);
+  });
+}
+
 btnAdd.addEventListener('click', () => {
   const titleInput = document.getElementById('taskTitle');
   const dateInput = document.getElementById('taskDate');
@@ -79,7 +151,6 @@ btnAdd.addEventListener('click', () => {
   timeInput.value = '';
 });
 
-// أزرار الإنهاء والحذف
 taskList.addEventListener('click', (e) => {
   const id = Number(e.target.getAttribute('data-id'));
   if (!id) return;
@@ -141,28 +212,17 @@ function playSwitchSound(isTurningOn) {
     osc.stop(ctx.currentTime + 0.05);
   } catch (e) {}
 }
-// ==========================================
-// نظام التنبيه قبل بربع ساعة + المنبه في الموعد
-// ==========================================
+
 const alarmToast = document.getElementById('alarmToast');
 const alarmIcon = document.getElementById('alarmIcon');
 const alarmTitle = document.getElementById('alarmTitle');
 const alarmText = document.getElementById('alarmText');
 const closeAlarmBtn = document.getElementById('closeAlarmBtn');
 
-// طلب إذن الإشعارات من المتصفح عند تسجيل الدخول
-btnLogin.addEventListener('click', () => {
-  if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission();
-  }
-});
-
-// زرار إغلاق التنبيه
 closeAlarmBtn.addEventListener('click', () => {
   alarmToast.classList.remove('show');
 });
 
-// فحص المواعيد كل 10 ثوانٍ
 setInterval(checkAlarms, 10000);
 
 function checkAlarms() {
@@ -174,32 +234,19 @@ function checkAlarms() {
   tasks.forEach(task => {
     if (task.done || !task.date || !task.time) return;
 
-    // حساب وقت الموعد بالدقيقة
     const taskDateTime = new Date(`${task.date}T${task.time}:00`);
-    const diffMinutes = Math.floor((taskDateTime - now) / 60000);
+    const diffMinutes = Math.round((taskDateTime - now) / 60000);
 
-    // 1. تنبيه قبل الموعد بربع ساعة (15 دقيقة)
     if (diffMinutes === 15 && !task.preNotified) {
       task.preNotified = true;
       updated = true;
-      triggerAlert(
-        '🔔',
-        'تذكير: متبقي ربع ساعة!',
-        `موعد "${task.title}" هيبدأ الساعة ${task.time}`,
-        false
-      );
+      triggerAlert('🔔', 'تذكير: متبقي ربع ساعة!', `موعد "${task.title}" هيبدأ الساعة ${task.time}`, false);
     }
 
-    // 2. رنين المنبه في نفس معاد الموعد بالظبط
     if (diffMinutes === 0 && !task.alarmRang) {
       task.alarmRang = true;
       updated = true;
-      triggerAlert(
-        '⏰',
-        'حان الآن وقت الموعد!',
-        `ابدأ الآن: "${task.title}" (${task.time})`,
-        true
-      );
+      triggerAlert('⏰', 'حان الآن وقت الموعد!', `ابدأ الآن: "${task.title}" (${task.time})`, true);
     }
   });
 
@@ -217,21 +264,19 @@ function triggerAlert(icon, title, message, isUrgent) {
 
   if (isUrgent) {
     alarmToast.classList.add('urgent');
-    playAlarmRing(); // رنة منبه كاملة
+    playAlarmRing();
   } else {
     alarmToast.classList.remove('urgent');
-    playSoftNotification(); // نغمة تنبيه هادئة
+    playSoftNotification();
   }
 
   alarmToast.classList.add('show');
 
-  // إرسال إشعار خارجي من المتصفح
   if ('Notification' in window && Notification.permission === 'granted') {
     new Notification(title, { body: message });
   }
 }
 
-// صوت تنبيه هادئ (قبل ربع ساعة)
 function playSoftNotification() {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -250,7 +295,6 @@ function playSoftNotification() {
   } catch (e) {}
 }
 
-// صوت رنين المنبه (في وقت الموعد)
 function playAlarmRing() {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
